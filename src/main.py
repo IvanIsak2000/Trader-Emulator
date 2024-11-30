@@ -12,6 +12,7 @@ from rich.progress import track
 
 
 from db.user import UserORM
+from market import MarketGraph
 from env import CLEAR, API_TOKEN
 
 console = Console()
@@ -24,29 +25,34 @@ class TraderEmulator:
 
     def main_menu(self):
         os.system(CLEAR)
-        self.console.print('''
-        88888888888                    888                        8888888888                        888          888                     
-            888                        888                        888                               888          888                     
-            888                        888                        888                               888          888                     
-            888  888d888  8888b.   .d88888  .d88b.  888d888       8888888    88888b.d88b.  888  888 888  8888b.  888888  .d88b.  888d888 
-            888  888P"       "88b d88" 888 d8P  Y8b 888P"         888        888 "888 "88b 888  888 888     "88b 888    d88""88b 888P"   
-            888  888     .d888888 888  888 88888888 888    888888 888        888  888  888 888  888 888 .d888888 888    888  888 888     
-            888  888     888  888 Y88b 888 Y8b.     888           888        888  888  888 Y88b 888 888 888  888 Y88b.  Y88..88P 888     
-            888  888     "Y888888  "Y88888  "Y8888  888           8888888888 888  888  888  "Y88888 888 "Y888888  "Y888  "Y88P"  888     
-        ''')
+        print(
+'''
+88888888888                    888                        8888888888                        888          888                     
+    888                        888                        888                               888          888                     
+    888                        888                        888                               888          888                     
+    888  888d888  8888b.   .d88888  .d88b.  888d888       8888888    88888b.d88b.  888  888 888  8888b.  888888  .d88b.  888d888 
+    888  888P"       "88b d88" 888 d8P  Y8b 888P"         888        888 "888 "88b 888  888 888     "88b 888    d88""88b 888P"   
+    888  888     .d888888 888  888 88888888 888    888888 888        888  888  888 888  888 888 .d888888 888    888  888 888     
+    888  888     888  888 Y88b 888 Y8b.     888           888        888  888  888 Y88b 888 888 888  888 Y88b.  Y88..88P 888     
+    888  888     "Y888888  "Y88888  "Y8888  888           8888888888 888  888  888  "Y88888 888 "Y888888  "Y888  "Y88P"  888     
+''')
         self.console.print(f'[green]UID: {self.user.uid}[/green]')
-        self.console.print(f'[green]Юзернейм: {self.user.username}[/green]')
-        self.console.print(f'[green]Баланс: {self.user.balance} USD[/green]')
-        main = Tree(f'\nГлавное меню')
-        main.add('0 - Выход', style='red')
-        main.add('1 - Аккаунт', style="bright_blue")
-        main.add(f'2 - Telegram бот({'[green]Включен[/green]' if API_TOKEN != '' else '[red]Выключен[/red]'})',
+        self.console.print(f'[green]Username: {self.user.username}[/green]')
+        self.console.print(f'[green]Balance: {self.user.balance} USD[/green]')
+
+        main = Tree(f'\nMain menu')
+        main.add('0 - Exit', style='red')
+        main.add('1 - Account', style="bright_blue")
+        main.add(f'2 - Telegram бот({'[green]Turn off[/green]' if API_TOKEN != '' else '[red]Turn on[/red]'})',
                  style='bright_blue')
         pr(main)
-        self.start()
+        # self.start()
+        table = MarketGraph().get_currencies_table()
+        self.console.print(table)
 
     def start(self):
         command = input('Command>')
+        command = command.strip()
         if command == '0':
             os.system(CLEAR)
             exit()
@@ -55,12 +61,10 @@ class TraderEmulator:
             ...
 
         elif command == '2':
-            # self.main_menu()
-            description = Text("API-TOKEN бота, полученный в @BotFather")
-            description.stylize("link https://t.me/BotFather", 22, 33)
+            telegram = Tree('Telegram bot settings')
             self.console.print(
-                f"API_TOKEN - {description}",
-                style="bright_blue"
+                f"[green]API_TOKEN[/green] - API-TOKEN of bot from @BotFather",
+                style="link https://t.me/BotFather",
             )
 
 
